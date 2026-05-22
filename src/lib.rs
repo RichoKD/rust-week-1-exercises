@@ -1,5 +1,6 @@
 use core::range;
 use std::collections::HashMap;
+use std::iter::Enumerate;
 use std::ptr::eq;
 
 // Name Assignment (variables and constants)
@@ -74,31 +75,44 @@ pub fn is_same_wallet<T>(wallet1: &T, wallet2: &T) -> bool {
 /// Normalize a Bitcoin address by trimming whitespace and lowercasing.
 pub fn normalize_address(address: &str) -> String {
     // TODO: Trim leading/trailing whitespace and convert to lowercase
-    todo!()
+    address.trim().to_lowercase()
 }
 
 /// Append a new UTXO to the list and return the updated list.
-pub fn add_utxo(utxos: Vec<Utxo>, new_utxo: Utxo) -> Vec<Utxo> {
+pub fn add_utxo(mut utxos: Vec<Utxo>, new_utxo: Utxo) -> Vec<Utxo> {
     // TODO: Push new_utxo into utxos and return it
-    todo!()
+    utxos.push(new_utxo);
+    utxos
 }
 
 /// Find the first transaction with a fee greater than 0.005 BTC.
 pub fn find_high_fee(fee_list: &[f64]) -> Option<(usize, f64)> {
     // TODO: Iterate with enumerate and return the first (index, fee) where fee > 0.005
-    todo!()
+    for (index, fee) in fee_list.iter().enumerate(){
+        let new_fee = *fee;
+
+        if new_fee > 0.005_f64 {
+           return Some((index, new_fee));
+        }
+    }
+
+    return None;
 }
 
 /// Return basic wallet details as a tuple of (name, balance).
 pub fn get_wallet_details() -> (String, f64) {
     // TODO: Return a tuple with wallet name and balance
-    todo!()
+    ("satoshi_wallet".to_string(), 50.0 )
 }
 
 /// Get the status of a transaction from the mempool or "not found".
 pub fn get_tx_status(tx_pool: &HashMap<String, String>, txid: &str) -> String {
     // TODO: Look up txid in tx_pool, returning the status or "not found"
-    todo!()
+    if tx_pool.contains_key(txid) {
+        tx_pool[txid].clone()
+    }else{
+        "not found".to_string()
+    }
 }
 
 /// Destructure wallet_info and format a status string.
