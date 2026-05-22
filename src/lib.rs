@@ -1,12 +1,14 @@
+use core::range;
 use std::collections::HashMap;
+use std::ptr::eq;
 
 // Name Assignment (variables and constants)
 // TODO: Assign the current bitcoin mining reward
-pub const MINING_REWARD: f64 = 0.0;
+pub const MINING_REWARD: f64 = 0.1;
 // TODO: Assign the current block height
-pub const CURRENT_BLOCK_HEIGHT: u64 = 0;
+pub const CURRENT_BLOCK_HEIGHT: u64 = 5;
 // TODO: Assign the number of satoshis in one Bitcoin
-pub const BTC_TO_SATS: u64 = 0;
+pub const BTC_TO_SATS: u64 = 100000000;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Utxo {
@@ -18,44 +20,55 @@ pub struct Utxo {
 /// Calculate the total Bitcoin reward for a given number of mined blocks.
 pub fn calculate_total_reward(blocks_mined: u64) -> f64 {
     // TODO: Multiply blocks_mined by MINING_REWARD and return result
-    todo!()
+    blocks_mined as f64 * MINING_REWARD
 }
 
 /// Return true if the transaction fee is between 0.00001 and 0.01 BTC.
 pub fn is_valid_tx_fee(fee: f64) -> bool {
     // TODO: Check if fee is between 0.00001 and 0.01 BTC (inclusive)
-    todo!()
+    fee >= 0.00001 && fee <= 0.01
 }
 
 /// Return true if the wallet balance is greater than 50.0 BTC.
 pub fn is_large_balance(balance: f64) -> bool {
     // TODO: Compare balance to 50.0 and return result
-    todo!()
+    balance > 50.0
 }
 
 /// Return the priority of a transaction ("high", "medium", "low") based on fee rate.
 pub fn tx_priority(size_bytes: u64, fee_btc: f64) -> &'static str {
     // TODO: Calculate fee rate (fee_btc / size_bytes) and use if/else if/else
     // High: > 0.00005, Medium: > 0.00001, otherwise Low
-    todo!()
+    let fee_rate = fee_btc / size_bytes as f64;
+
+    if fee_rate > 0.00005 {
+        return "high";
+    }else{
+        if fee_rate > 0.00001 {
+            return "medium";
+        }else{
+            return "low";
+        }
+    }
+    
 }
 
 /// Return true if the network string equals "mainnet" (case-insensitive).
 pub fn is_mainnet(network: &str) -> bool {
     // TODO: Convert network to lowercase and compare with "mainnet"
-    todo!()
+    network.to_lowercase() == "mainnet"
 }
 
 /// Return true if value is in the inclusive range 100..=200.
 pub fn is_in_range(value: i64) -> bool {
     // TODO: Check if 100 <= value <= 200
-    todo!()
+    100 <= value && value <= 200
 }
 
 /// Return true if both references point to the exact same object in memory.
 pub fn is_same_wallet<T>(wallet1: &T, wallet2: &T) -> bool {
     // TODO: Use std::ptr::eq to compare reference identity
-    todo!()
+    eq(wallet1, wallet2)
 }
 
 /// Normalize a Bitcoin address by trimming whitespace and lowercasing.
