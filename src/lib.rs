@@ -1,4 +1,6 @@
 use core::range;
+use rand::distributions::{Alphanumeric, DistString};
+use rand::prelude::IteratorRandom;
 use std::collections::HashMap;
 use std::iter::Enumerate;
 use std::ptr::eq;
@@ -119,20 +121,25 @@ pub fn get_tx_status(tx_pool: &HashMap<String, String>, txid: &str) -> String {
 pub fn unpack_wallet_info(wallet_info: (String, f64)) -> String {
     // TODO: Destructure the tuple into (name, balance) and format the result
     // Expected format: "Wallet <name> has balance: <balance> BTC"
-    todo!()
+    let (name, balance) = wallet_info;
+    format!("Wallet {} has balance: {} BTC", name, balance)
 }
 
 /// Convert BTC to satoshis (1 BTC = 100,000,000 sats).
 pub fn calculate_sats(btc: f64) -> u64 {
     // TODO: Multiply btc by BTC_TO_SATS and return as u64
-    todo!()
+    let sats = BTC_TO_SATS as f64 * btc;
+    sats as u64
 }
 
 /// Generate a mock Bitcoin address of length 32 with the given prefix.
 pub fn generate_address(prefix: &str) -> String {
     // TODO: Build a random suffix of (32 - prefix.len()) chars from [a-z0-9]
     // TODO: Concatenate prefix + suffix and return
-    todo!()
+    let prefix_len = prefix.len();
+    let suffix = Alphanumeric.sample_string(&mut rand::thread_rng(), 32 - prefix_len).to_ascii_lowercase();
+    
+    format!("{}{}", prefix, suffix)
 }
 
 /// Validate a Bitcoin block height. Returns (is_valid, message).
