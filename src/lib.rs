@@ -146,8 +146,15 @@ pub fn generate_address(prefix: &str) -> String {
 pub fn validate_block_height(height: i64) -> (bool, String) {
     // TODO: Check that height is not negative
     // TODO: Check that height is within a realistic range (<= 800_000)
-    // TODO: Return (true, "Valid block height") otherwise
-    todo!()
+    // TODO: Return (true, "Valid block height") otherwise 
+        if height > 800_000 {
+            (false, "Unrealistic block height".to_string())
+        } else if height < 0 {
+            (false, "Negative block height".to_string())
+        }
+        else{
+            (true, "Valid block height".to_string())
+        }
 }
 
 /// Compute the block reward (in sats) for each block height based on the halving schedule.
@@ -155,14 +162,27 @@ pub fn halving_schedule(blocks: &[u64]) -> HashMap<u64, u64> {
     // TODO: Base reward is 50 * 100_000_000 sats; halving interval is 210_000 blocks
     // TODO: For each block: halvings = block / 210_000; reward = base >> halvings
     // TODO: Insert (block, reward) into the result HashMap
-    todo!()
+    let mut result:HashMap<u64, u64> = Default::default();
+    let base = 50 * BTC_TO_SATS;
+
+    for block in blocks {
+        let reward = base >> block / 210_000;
+        result.insert(block.clone(), reward);
+    }
+
+    result
 }
 
 /// Find the UTXO with the smallest value that meets or exceeds target.
 pub fn find_utxo_with_min_value(utxos: &[Utxo], target: u64) -> Option<Utxo> {
     // TODO: Filter UTXOs to those with value >= target
     // TODO: Return the one with the smallest value, or None if none qualify
-    todo!()
+    utxos
+        .iter()
+        .filter(|utxo| utxo.value >= target)
+        .min_by_key(|utxo| utxo.value)
+        .cloned()
+
 }
 
 /// Create a UTXO map from txid, vout, and arbitrary extra string fields.
