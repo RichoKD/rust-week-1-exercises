@@ -193,10 +193,33 @@ pub fn create_utxo(
 ) -> HashMap<String, String> {
     // TODO: Build a base map with "txid" and "vout" (as string)
     // TODO: Merge extra into the base map and return
-    todo!()
+    // let mut map = HashMap::with_capacity(2 + extra.len());
+    let mut map:HashMap<String,String> = Default::default();
+    
+    map.insert("txid".to_string(), txid.to_string());
+    map.insert("vout".to_string(), vout.to_string());
+
+    map.extend(extra);
+
+    map
+
 }
 
 // Implement extract_tx_version function below
 pub fn extract_tx_version(raw_tx_hex: &str) -> Result<u32, String> {
-    todo!()
+    if raw_tx_hex.len() < 8 {
+        return Err("Transaction data too short".to_string());
+    }
+
+    let short_hex= &raw_tx_hex[..8];
+
+    let version_bytes = hex::decode(short_hex)
+        .map_err(|e| format!("Hex decode error: {}", e))?;
+
+    let byte_array: [u8; 4] = version_bytes
+        .try_into()
+        .map_err(|_| "Invalid byte buffer allocation".to_string())?;
+
+    Ok(u32::from_le_bytes(byte_array))
+
 }
