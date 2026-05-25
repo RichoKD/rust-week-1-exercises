@@ -13,10 +13,12 @@ mod exercise_tests {
 
     #[test]
     fn test_constants_set() {
-        assert!(
-            MINING_REWARD > 0.0,
-            "MINING_REWARD must be set to a positive value"
-        );
+        const {
+            assert!(
+                MINING_REWARD > 0.0,
+                "MINING_REWARD must be set to a positive value"
+            )
+        };
         assert_eq!(BTC_TO_SATS, 100_000_000);
     }
 

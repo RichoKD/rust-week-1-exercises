@@ -1,8 +1,5 @@
-use core::range;
 use rand::distributions::{Alphanumeric, DistString};
-use rand::prelude::IteratorRandom;
 use std::collections::HashMap;
-use std::iter::Enumerate;
 use std::ptr::eq;
 
 // Name Assignment (variables and constants)
@@ -29,7 +26,7 @@ pub fn calculate_total_reward(blocks_mined: u64) -> f64 {
 /// Return true if the transaction fee is between 0.00001 and 0.01 BTC.
 pub fn is_valid_tx_fee(fee: f64) -> bool {
     // TODO: Check if fee is between 0.00001 and 0.01 BTC (inclusive)
-    fee >= 0.00001 && fee <= 0.01
+    (0.00001..=0.01).contains(&fee)
 }
 
 /// Return true if the wallet balance is greater than 50.0 BTC.
@@ -45,15 +42,14 @@ pub fn tx_priority(size_bytes: u64, fee_btc: f64) -> &'static str {
     let fee_rate = fee_btc / size_bytes as f64;
 
     if fee_rate > 0.00005 {
-        return "high";
-    }else{
+        "high"
+    } else {
         if fee_rate > 0.00001 {
-            return "medium";
-        }else{
-            return "low";
+            "medium"
+        } else {
+            "low"
         }
     }
-    
 }
 
 /// Return true if the network string equals "mainnet" (case-insensitive).
@@ -65,7 +61,7 @@ pub fn is_mainnet(network: &str) -> bool {
 /// Return true if value is in the inclusive range 100..=200.
 pub fn is_in_range(value: i64) -> bool {
     // TODO: Check if 100 <= value <= 200
-    100 <= value && value <= 200
+    (100..=200).contains(&value)
 }
 
 /// Return true if both references point to the exact same object in memory.
@@ -90,21 +86,21 @@ pub fn add_utxo(mut utxos: Vec<Utxo>, new_utxo: Utxo) -> Vec<Utxo> {
 /// Find the first transaction with a fee greater than 0.005 BTC.
 pub fn find_high_fee(fee_list: &[f64]) -> Option<(usize, f64)> {
     // TODO: Iterate with enumerate and return the first (index, fee) where fee > 0.005
-    for (index, fee) in fee_list.iter().enumerate(){
+    for (index, fee) in fee_list.iter().enumerate() {
         let new_fee = *fee;
 
         if new_fee > 0.005_f64 {
-           return Some((index, new_fee));
+            return Some((index, new_fee));
         }
     }
 
-    return None;
+    None
 }
 
 /// Return basic wallet details as a tuple of (name, balance).
 pub fn get_wallet_details() -> (String, f64) {
     // TODO: Return a tuple with wallet name and balance
-    ("satoshi_wallet".to_string(), 50.0 )
+    ("satoshi_wallet".to_string(), 50.0)
 }
 
 /// Get the status of a transaction from the mempool or "not found".
@@ -112,7 +108,7 @@ pub fn get_tx_status(tx_pool: &HashMap<String, String>, txid: &str) -> String {
     // TODO: Look up txid in tx_pool, returning the status or "not found"
     if tx_pool.contains_key(txid) {
         tx_pool[txid].clone()
-    }else{
+    } else {
         "not found".to_string()
     }
 }
@@ -137,8 +133,10 @@ pub fn generate_address(prefix: &str) -> String {
     // TODO: Build a random suffix of (32 - prefix.len()) chars from [a-z0-9]
     // TODO: Concatenate prefix + suffix and return
     let prefix_len = prefix.len();
-    let suffix = Alphanumeric.sample_string(&mut rand::thread_rng(), 32 - prefix_len).to_ascii_lowercase();
-    
+    let suffix = Alphanumeric
+        .sample_string(&mut rand::thread_rng(), 32 - prefix_len)
+        .to_ascii_lowercase();
+
     format!("{}{}", prefix, suffix)
 }
 
@@ -146,15 +144,14 @@ pub fn generate_address(prefix: &str) -> String {
 pub fn validate_block_height(height: i64) -> (bool, String) {
     // TODO: Check that height is not negative
     // TODO: Check that height is within a realistic range (<= 800_000)
-    // TODO: Return (true, "Valid block height") otherwise 
-        if height > 800_000 {
-            (false, "Unrealistic block height".to_string())
-        } else if height < 0 {
-            (false, "Negative block height".to_string())
-        }
-        else{
-            (true, "Valid block height".to_string())
-        }
+    // TODO: Return (true, "Valid block height") otherwise
+    if height > 800_000 {
+        (false, "Unrealistic block height".to_string())
+    } else if height < 0 {
+        (false, "Negative block height".to_string())
+    } else {
+        (true, "Valid block height".to_string())
+    }
 }
 
 /// Compute the block reward (in sats) for each block height based on the halving schedule.
@@ -162,12 +159,12 @@ pub fn halving_schedule(blocks: &[u64]) -> HashMap<u64, u64> {
     // TODO: Base reward is 50 * 100_000_000 sats; halving interval is 210_000 blocks
     // TODO: For each block: halvings = block / 210_000; reward = base >> halvings
     // TODO: Insert (block, reward) into the result HashMap
-    let mut result:HashMap<u64, u64> = Default::default();
+    let mut result: HashMap<u64, u64> = Default::default();
     let base = 50 * BTC_TO_SATS;
 
     for block in blocks {
-        let reward = base >> block / 210_000;
-        result.insert(block.clone(), reward);
+        let reward = base >> (block / 210_000);
+        result.insert(*block, reward);
     }
 
     result
@@ -182,7 +179,6 @@ pub fn find_utxo_with_min_value(utxos: &[Utxo], target: u64) -> Option<Utxo> {
         .filter(|utxo| utxo.value >= target)
         .min_by_key(|utxo| utxo.value)
         .cloned()
-
 }
 
 /// Create a UTXO map from txid, vout, and arbitrary extra string fields.
@@ -194,15 +190,14 @@ pub fn create_utxo(
     // TODO: Build a base map with "txid" and "vout" (as string)
     // TODO: Merge extra into the base map and return
     // let mut map = HashMap::with_capacity(2 + extra.len());
-    let mut map:HashMap<String,String> = Default::default();
-    
+    let mut map: HashMap<String, String> = Default::default();
+
     map.insert("txid".to_string(), txid.to_string());
     map.insert("vout".to_string(), vout.to_string());
 
     map.extend(extra);
 
     map
-
 }
 
 // Implement extract_tx_version function below
@@ -211,15 +206,13 @@ pub fn extract_tx_version(raw_tx_hex: &str) -> Result<u32, String> {
         return Err("Transaction data too short".to_string());
     }
 
-    let short_hex= &raw_tx_hex[..8];
+    let short_hex = &raw_tx_hex[..8];
 
-    let version_bytes = hex::decode(short_hex)
-        .map_err(|e| format!("Hex decode error: {}", e))?;
+    let version_bytes = hex::decode(short_hex).map_err(|e| format!("Hex decode error: {}", e))?;
 
     let byte_array: [u8; 4] = version_bytes
         .try_into()
         .map_err(|_| "Invalid byte buffer allocation".to_string())?;
 
     Ok(u32::from_le_bytes(byte_array))
-
 }
