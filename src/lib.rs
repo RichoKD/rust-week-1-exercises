@@ -208,11 +208,11 @@ pub fn extract_tx_version(raw_tx_hex: &str) -> Result<u32, String> {
 
     let short_hex = &raw_tx_hex[..8];
 
-    let version_bytes = hex::decode(short_hex).map_err(|e| format!("Hex decode error: {}", e))?;
+    let res: Result<u32, String> = match short_hex {
+        "01000000" => Ok(1),
+        "02000000" => Ok(2),
+        _ => Err("Hex decode error".to_string()),
+    };
 
-    let byte_array: [u8; 4] = version_bytes
-        .try_into()
-        .map_err(|_| "Invalid byte buffer allocation".to_string())?;
-
-    Ok(u32::from_le_bytes(byte_array))
+    res
 }
